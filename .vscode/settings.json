@@ -60,7 +60,6 @@
         "*.asset": "yaml",
         "*.meta": "yaml",
         "*.prefab": "yaml",
-        "*.unity": "yaml",
         "*.unity": "yaml"
     },
     "explorer.fileNesting.enabled": true,
@@ -68,6 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "New2DProject.slnx"
     "dotnet.defaultSolution": "SHOOTERproject.slnx"
 }
