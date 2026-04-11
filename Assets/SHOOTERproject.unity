@@ -828,7 +828,6 @@ MonoBehaviour:
   horizontalScreenSize: 0
   verticalScreenSize: 0
   livesText: {fileID: 166897201}
-  ScoreText: {fileID: 0}
   score: 0
 --- !u!4 &637827484
 Transform:

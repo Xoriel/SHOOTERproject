@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     public float verticalScreenSize;
 
     public TextMeshProUGUI livesText;
-    public TextMeshProUGUI ScoreText;
+    
 
     public int score;
 
