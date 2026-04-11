@@ -6,20 +6,26 @@ public class GameManager : MonoBehaviour
     public GameObject cloudPrefab;
 
     public GameObject enemyOnePrefab;
+    public GameObject enemyTwoPrefab;
     public float horizontalScreenSize;
     public float verticalScreenSize;
 
     public TextMeshProUGUI livesText;
+    public TextMeshProUGUI ScoreText;
+
+    public int score;
 
     // Start is called before the first frame update
     void Start()
     {
         horizontalScreenSize = 10f;
         verticalScreenSize = 6.5f;
-
+        score = 0;
+        
         CreateSky();
 
         InvokeRepeating("CreateEnemyOne", 1, 2);
+        InvokeRepeating("CreateEnemyTwo", 1, 10);
     }
 
     void CreateSky()
@@ -44,10 +50,21 @@ public class GameManager : MonoBehaviour
         Instantiate(enemyOnePrefab, new Vector3(Random.Range(-horizontalScreenSize, horizontalScreenSize) *.9f, verticalScreenSize, 0), Quaternion.identity);
     }
 
+    void CreateEnemyTwo()
+    {
+        Instantiate(enemyTwoPrefab, new Vector3(Random.Range(-horizontalScreenSize, horizontalScreenSize) *.9f, verticalScreenSize, 0), Quaternion.identity);
+    }
+
     public void ChangeLivesText (int currentLives)
     {
-        livesText.text = "lives" + currentLives;
+        livesText.text = "Lives: " + currentLives;
         //"lives + 2" NOT
         //"lives 2"
     }
+
+    public void AddScore(int earnedScore)
+    {
+        score = score + earnedScore;
+    }
+
 }

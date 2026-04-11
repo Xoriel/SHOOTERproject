@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class EnemyTwo : MonoBehaviour
 {
     public GameObject explosionPrefab;
     private GameManager gameManager;
@@ -22,7 +22,7 @@ public class Enemy : MonoBehaviour
         {
             Destroy(whatDidIHit.gameObject);
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-            gameManager.AddScore(5);
+            gameManager.AddScore(10);
             //add score to the game manager if I have reference
             Destroy(this.gameObject);
         }

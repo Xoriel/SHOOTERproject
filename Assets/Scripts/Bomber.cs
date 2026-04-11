@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Glider : MonoBehaviour
+public class Bomber : MonoBehaviour
 {
     public bool goingUp;
     public float speed;
