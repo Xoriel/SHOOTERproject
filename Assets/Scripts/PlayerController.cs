@@ -1,21 +1,28 @@
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     // 3 did movement, shooting, teleporting
     // teleporting and movement together
 
+    public int lives;
+
+    public GameManager gameManager;
     public GameObject bulletPrefab;
+    public GameObject explosionPrefab;
+
     private float playerSpeed;
     private float horizontalInput;
     private float verticalInput;
 
-    private float horizontalScreenLimit = 9.5f;
-    private float verticalScreenLimit = 6.5f;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerSpeed = 6f;
+        lives = 3;
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager.ChangeLivesText(lives);
     }
 
     // Update is called once per frame
@@ -23,6 +30,17 @@ public class Player : MonoBehaviour
     {
         Shooting();
         Movement();
+    }
+    public void LoseALife()
+    {
+        lives--; 
+        gameManager.ChangeLivesText(lives);
+        if(lives ==0)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            Destroy(this.gameObject);
+        }
+
     }
 
     void Movement()
@@ -32,12 +50,16 @@ public class Player : MonoBehaviour
         verticalInput = Input.GetAxis("Vertical"); // Needs to be capitalized
         //translate takes in a vector(direction) multiplied by time and speed
         transform.Translate(new Vector3(horizontalInput,verticalInput,0) * Time.deltaTime * playerSpeed);
+
+        float horizontalScreenSize = gameManager.horizontalScreenSize;
+        float verticalScreenSize = gameManager.verticalScreenSize;
+
         //player leaves horizontally (position is x,y,z)
-        if(transform.position.x > horizontalScreenLimit || transform.position.x <= -horizontalScreenLimit)
+        if(transform.position.x > horizontalScreenSize || transform.position.x <= -horizontalScreenSize)
         {
         transform.position = new Vector3(transform.position.x * -1, transform.position.y, 0);
         }
-        if(transform.position.y > verticalScreenLimit || transform.position.y <= -verticalScreenLimit)
+        if(transform.position.y > verticalScreenSize || transform.position.y <= -verticalScreenSize)
         {
         transform.position = new Vector3(transform.position.x, transform.position.y * -1, 0);
         }

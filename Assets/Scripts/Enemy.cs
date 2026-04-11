@@ -2,15 +2,29 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    // Update is called once per frame
-    void Update()
+    public GameObject explosionPrefab;
+    private GameManager gameManager;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
     {
         
-        transform.Translate(new Vector3 (0,-1,0) * Time.deltaTime * 3f);
+    }
 
-        if(transform.position.y < -6.5f)
+    private void OnTriggerEnter2D(Collider2D whatDidIHit)
+    {
+        if(whatDidIHit.tag == "Player")
         {
+            whatDidIHit.GetComponent<PlayerController>().LoseALife();
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            Destroy(this.gameObject);
+        }
+        else if(whatDidIHit.tag == "Weapons")
+        {
+            Destroy(whatDidIHit.gameObject);
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            //add score to the game manager if I have reference
             Destroy(this.gameObject);
         }
     }
+
 }
