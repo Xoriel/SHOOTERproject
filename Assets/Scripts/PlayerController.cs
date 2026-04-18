@@ -1,4 +1,7 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class PlayerController : MonoBehaviour
 {
@@ -6,12 +9,18 @@ public class PlayerController : MonoBehaviour
     // teleporting and movement together
 
     public int lives;
+    public int score;
 
     public GameManager gameManager;
     public GameObject bulletPrefab;
     public GameObject explosionPrefab;
+    public GameObject thrusterPrefab;
+    public GameObject shieldPrefab;
 
-    private float playerSpeed;
+    public int weaponType;
+    public bool shieldActive;
+
+    private float speed;
     private float horizontalInput;
     private float verticalInput;
 
@@ -19,8 +28,11 @@ public class PlayerController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        playerSpeed = 6f;
+        shieldActive = false;
+        weaponType = 1;
+        speed = 6f;
         lives = 3;
+        score = 0; 
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         gameManager.ChangeLivesText(lives);
         
@@ -34,14 +46,88 @@ public class PlayerController : MonoBehaviour
     }
     public void LoseALife()
     {
-        lives--; 
+        if(!shieldActive)
+        {
+            lives--;
+        }
+        if(shieldActive)
+        {
+            shieldPrefab.SetActive(false);
+            shieldActive = false;
+        } 
         gameManager.ChangeLivesText(lives);
         if(lives ==0)
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+
+            gameManager.GameOver();
+
             Destroy(this.gameObject);
         }
 
+    }
+
+IEnumerator ShieldPowerDown()
+    {
+        yield return new WaitForSeconds(5);
+        shieldPrefab.SetActive(false);
+        shieldActive = false;
+        gameManager.PlaySound(2);
+        gameManager.ManagePowerupText(5);
+    }
+IEnumerator SpeedPowerDown()
+    {
+        yield return new WaitForSeconds(5);
+        speed = 5f;
+        thrusterPrefab.SetActive(false);
+        gameManager.PlaySound(2);
+        gameManager.ManagePowerupText(5);
+    }
+IEnumerator WeaponPowerDown()
+    {
+        yield return new WaitForSeconds(5);
+        weaponType = 1;
+        gameManager.PlaySound(2);
+        gameManager.ManagePowerupText(5);
+    }
+
+    private void OnTriggerEnter2D(Collider2D whatDidIHit)
+    {
+        if(whatDidIHit.tag == "Powerup")
+        {
+            Destroy(whatDidIHit.gameObject);
+            int whichPowerup = Random.Range(1, 5);
+            gameManager.PlaySound(1);
+            switch (whichPowerup)
+            {
+                case 1:
+                    //Picked up speed
+                    speed = 10f;
+                    thrusterPrefab.SetActive(true);
+                    gameManager.ManagePowerupText(1);
+                    StartCoroutine(SpeedPowerDown());
+                    break;
+                case 2:
+                    weaponType = 2; //Picked up double weapon
+                    gameManager.ManagePowerupText(2);
+                    StartCoroutine(WeaponPowerDown());
+                    break;
+                case 3:
+                    weaponType = 3; //Picked up triple weapon
+                    gameManager.ManagePowerupText(3);
+                    StartCoroutine(WeaponPowerDown());
+                    break;
+                case 4:
+                    //Picked up shield
+                    //Do I already have a shield?
+                    //If yes: do nothing
+                    //If not: activate the shield's visibility
+                    shieldPrefab.SetActive(true);
+                    gameManager.ManagePowerupText(4);
+                    StartCoroutine(ShieldPowerDown());
+                    break;
+            }
+        }
     }
 
     void Movement()
@@ -50,7 +136,7 @@ public class PlayerController : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal"); // Needs to be capitalized
         verticalInput = Input.GetAxis("Vertical"); // Needs to be capitalized
         //translate takes in a vector(direction) multiplied by time and speed
-        transform.Translate(new Vector3(horizontalInput,0,0) * Time.deltaTime * playerSpeed);
+        transform.Translate(new Vector3(horizontalInput,verticalInput,0) * Time.deltaTime * speed);
 
         float horizontalScreenSize = gameManager.horizontalScreenSize;
         

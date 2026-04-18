@@ -1,17 +1,31 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
     public GameObject cloudPrefab;
-
+    public GameObject gameOverMenu;
     public GameObject enemyOnePrefab;
     public GameObject enemyTwoPrefab;
+    public GameObject powerupPrefab;
+    public GameObject audioPlayer;
+
+    public AudioClip powerUpSound;
+    public AudioClip powerDownSound;
+
     public float horizontalScreenSize;
     public float verticalScreenSize;
 
     public TextMeshProUGUI livesText;
+    public TextMeshProUGUI powerupText;
+    public TextMeshProUGUI scoreText;
     
+    private bool gameOver;
 
     public int score;
 
@@ -20,12 +34,28 @@ public class GameManager : MonoBehaviour
     {
         horizontalScreenSize = 10f;
         verticalScreenSize = 6.5f;
+
         score = 0;
+        AddScore(0);
+
+        gameOver = false;
         
         CreateSky();
 
         InvokeRepeating("CreateEnemyOne", 1, 2);
         InvokeRepeating("CreateEnemyTwo", 1, 10);
+
+        StartCoroutine(SpawnPowerup());
+
+        powerupText.text = "No Power-Ups";
+    }
+
+    void Update()
+    {
+        if(gameOver && Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     void CreateSky()
@@ -55,6 +85,54 @@ public class GameManager : MonoBehaviour
         Instantiate(enemyTwoPrefab, new Vector3(Random.Range(-horizontalScreenSize, horizontalScreenSize) *.9f, verticalScreenSize, 0), Quaternion.identity);
     }
 
+    void CreatePowerup()
+    {
+        Instantiate(powerupPrefab, new Vector3(Random.Range(-horizontalScreenSize * .8f, horizontalScreenSize * .8f), Random.Range(-verticalScreenSize * .8f, verticalScreenSize *.8f), 0), Quaternion.identity);
+    }
+
+    IEnumerator SpawnPowerup()
+    {
+        float spawnTime = Random.Range(3, 5);
+        yield return new WaitForSeconds(spawnTime);
+        CreatePowerup();
+        StartCoroutine(SpawnPowerup());
+    }
+
+    public void ManagePowerupText(int powerupType)
+    {
+        switch(powerupType)
+        {
+            case 1:
+                powerupText.text = "Speed";
+                break;
+            case 2:
+                powerupText.text = "Double Weapon!";
+                break;
+            case 3:
+                powerupText.text = "Triple Weapon!";
+                break;
+            case 4:
+                powerupText.text = "Shield!";
+                break;
+            default:
+                powerupText.text = "No Power-Ups";
+                break;
+        }
+    }
+
+    public void PlaySound(int whichSound)
+    {
+        switch(whichSound)
+        {
+            case 1:
+                audioPlayer.GetComponent<AudioSource>().PlayOneShot(powerUpSound);
+                break;
+            case 2: 
+                audioPlayer.GetComponent<AudioSource>().PlayOneShot(powerDownSound);
+                break;
+        }
+    }
+
     public void ChangeLivesText (int currentLives)
     {
         livesText.text = "Lives: " + currentLives;
@@ -67,4 +145,12 @@ public class GameManager : MonoBehaviour
         score = score + earnedScore;
     }
 
+    public void GameOver()
+    {
+        //set our game over object menu to true
+        gameOverMenu.SetActive(true);
+        //game over to be true
+        gameOver = true;
+
+    }
 }
