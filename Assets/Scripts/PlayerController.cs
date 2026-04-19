@@ -131,18 +131,21 @@ IEnumerator WeaponPowerDown()
 
     void Movement()
     {
-        //read wasd - "horizontal" and "vertical" axis
-        horizontalInput = Input.GetAxis("Horizontal"); // Needs to be capitalized
-        verticalInput = Input.GetAxis("Vertical"); // Needs to be capitalized
-        //translate takes in a vector(direction) multiplied by time and speed
-        transform.Translate(new Vector3(horizontalInput,verticalInput,0) * Time.deltaTime * speed);
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
+        transform.Translate(new Vector3(horizontalInput, verticalInput, 0) * Time.deltaTime * speed);
 
         float horizontalScreenSize = gameManager.horizontalScreenSize;
-        
-        //player leaves horizontally (position is x,y,z)
-        if(transform.position.x > horizontalScreenSize || transform.position.x <= -horizontalScreenSize)
+        float verticalScreenSize = gameManager.verticalScreenSize;
+
+        if (transform.position.x <= -horizontalScreenSize || transform.position.x > horizontalScreenSize)
         {
-        transform.position = new Vector3(transform.position.x * -1, transform.position.y, 0);
+            transform.position = new Vector3(transform.position.x * -1, transform.position.y, 0);
+        }
+
+        if (transform.position.y <= -verticalScreenSize || transform.position.y > verticalScreenSize)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y * -1, 0);
         }
         
     }
