@@ -9,7 +9,6 @@ public class PlayerController : MonoBehaviour
     // teleporting and movement together
 
     public int lives;
-    public int score;
 
     public GameManager gameManager;
     public GameObject bulletPrefab;
@@ -32,7 +31,6 @@ public class PlayerController : MonoBehaviour
         weaponType = 1;
         speed = 6f;
         lives = 3;
-        score = 0; 
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         gameManager.ChangeLivesText(lives);
         
@@ -123,6 +121,7 @@ IEnumerator WeaponPowerDown()
                     //If yes: do nothing
                     //If not: activate the shield's visibility
                     shieldPrefab.SetActive(true);
+                    shieldActive = true;
                     gameManager.ManagePowerupText(4);
                     StartCoroutine(ShieldPowerDown());
                     break;
@@ -152,8 +151,21 @@ IEnumerator WeaponPowerDown()
     {
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            // 1. what we're spawning, 2. position we spawn it at, 3. rotation we spawn it at
-            Instantiate(bulletPrefab, transform.position + new Vector3 (0,1,0), Quaternion.identity);
+            switch(weaponType)
+            {
+                case 1:
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+                    break;
+                case 2:
+                    Instantiate(bulletPrefab, transform.position + new Vector3(-0.5f, 0.5f, 0), Quaternion.identity);
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
+                    break;
+                case 3:
+                    Instantiate(bulletPrefab, transform.position + new Vector3(-0.5f, 0.5f, 0), Quaternion.Euler(0, 0, 45));
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0.5f, 0.5f, 0), Quaternion.Euler(0, 0, -45));
+                    break;
+            }
         }
     }
 }
