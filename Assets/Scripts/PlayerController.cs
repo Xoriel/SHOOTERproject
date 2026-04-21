@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
         lives = 3;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         gameManager.ChangeLivesText(lives);
-        
+        gameManager.PlaySound(6);
     }
 
     // Update is called once per frame
@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour
     {
         Shooting();
         Movement();
+
     }
     public void LoseALife()
     {
@@ -127,6 +128,13 @@ IEnumerator WeaponPowerDown()
                     break;
             }
         }
+
+        if(whatDidIHit.tag == "Coin")
+        {
+            Destroy(whatDidIHit.gameObject);
+            gameManager.PlaySound(3);
+            gameManager.AddScore(1);
+        }
     }
 
     void Movement()
@@ -169,6 +177,7 @@ IEnumerator WeaponPowerDown()
                     Instantiate(bulletPrefab, transform.position + new Vector3(0.5f, 0.5f, 0), Quaternion.Euler(0, 0, -45));
                     break;
             }
+            gameManager.PlaySound(4);
         }
     }
 }

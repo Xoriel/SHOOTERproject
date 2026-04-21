@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
+using System.Diagnostics;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,10 +14,15 @@ public class GameManager : MonoBehaviour
     public GameObject enemyOnePrefab;
     public GameObject enemyTwoPrefab;
     public GameObject powerupPrefab;
+    public GameObject coinPrefab;
     public GameObject audioPlayer;
 
     public AudioClip powerUpSound;
     public AudioClip powerDownSound;
+    public AudioClip coinSound;
+    public AudioClip shootSound;
+    public AudioClip explosionSound;
+    public AudioClip planeLoopSound;
 
     public float horizontalScreenSize;
     public float verticalScreenSize;
@@ -46,6 +52,7 @@ public class GameManager : MonoBehaviour
         InvokeRepeating("CreateEnemyTwo", 1, 10);
 
         StartCoroutine(SpawnPowerup());
+        StartCoroutine(SpawnCoin());
 
         powerupText.text = "No Power-Ups";
     }
@@ -90,12 +97,25 @@ public class GameManager : MonoBehaviour
         Instantiate(powerupPrefab, new Vector3(Random.Range(-horizontalScreenSize * .8f, horizontalScreenSize * .8f), Random.Range(-verticalScreenSize * .8f, verticalScreenSize *.8f), 0), Quaternion.identity);
     }
 
+    void CreateCoin()
+    {
+        Instantiate(coinPrefab, new Vector3(Random.Range(-horizontalScreenSize * .8f, horizontalScreenSize * .8f), Random.Range(-verticalScreenSize * .8f, verticalScreenSize *.8f), 0), Quaternion.identity);
+    }
+
     IEnumerator SpawnPowerup()
     {
-        float spawnTime = Random.Range(3, 5);
+        float spawnTime = Random.Range(5, 7);
         yield return new WaitForSeconds(spawnTime);
         CreatePowerup();
         StartCoroutine(SpawnPowerup());
+    }
+
+    IEnumerator SpawnCoin()
+    {
+        float spawnTime = Random.Range(7, 9);
+        yield return new WaitForSeconds(spawnTime);
+        CreateCoin();
+        StartCoroutine(SpawnCoin());
     }
 
     public void ManagePowerupText(int powerupType)
@@ -125,10 +145,22 @@ public class GameManager : MonoBehaviour
         switch(whichSound)
         {
             case 1:
-                audioPlayer.GetComponent<AudioSource>().PlayOneShot(powerUpSound);
+                audioPlayer.GetComponent<AudioSource>().PlayOneShot(powerUpSound, 0.7f);
                 break;
             case 2: 
-                audioPlayer.GetComponent<AudioSource>().PlayOneShot(powerDownSound);
+                audioPlayer.GetComponent<AudioSource>().PlayOneShot(powerDownSound, 0.4f);
+                break;
+            case 3:
+                audioPlayer.GetComponent<AudioSource>().PlayOneShot(coinSound, 0.6f);
+                break;
+            case 4:
+                audioPlayer.GetComponent<AudioSource>().PlayOneShot(shootSound, 0.8f);
+                break;
+            case 5:
+                audioPlayer.GetComponent<AudioSource>().PlayOneShot(explosionSound, 0.3f);
+                break;
+            case 6:
+                audioPlayer.GetComponent<AudioSource>().PlayOneShot(planeLoopSound, 0.05f);
                 break;
         }
     }
